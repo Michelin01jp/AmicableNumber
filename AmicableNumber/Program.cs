@@ -9,20 +9,21 @@ namespace AmicableNumber
 {
     class Program
     {
-        static List<ulong> AmicableNumbers;
+        static List<ulong> AmicableNumbers = new List<ulong>();
+        static string FileName = "AmicableNumbers.txt";
 
         static void Main(string[] args)
         {
-            AmicableNumbers = new List<ulong>();
+            Load();
             
-            StreamWriter sw = new StreamWriter("AmicableNumbers.txt", true, Encoding.GetEncoding("Shift_JIS"));
+            StreamWriter sw = new StreamWriter(FileName, true, Encoding.GetEncoding("Shift_JIS"));
 
             Console.CancelKeyPress += (sender, e) =>
             {
                 sw.Close();
             };
 
-            for(ulong i = 1; i <= ulong.MaxValue; i++)
+            for (ulong i = AmicableNumbers.Count == 0 ? 1ul : AmicableNumbers[AmicableNumbers.Count - 2]; i <= ulong.MaxValue; i++)
             {
                 ulong divisorsSum1 = GetDivisorSum(i);
                 ulong divisorsSum2 = GetDivisorSum(divisorsSum1);
@@ -32,7 +33,7 @@ namespace AmicableNumber
                     AmicableNumbers.Add(divisorsSum2);
                     AmicableNumbers.Add(divisorsSum1);
 
-                    Console.WriteLine("out {0}:{1}", divisorsSum2, divisorsSum1);
+                    Console.WriteLine("{0} {1}:{2}", DateTime.Now.ToString("HH:mm:ss"), divisorsSum2, divisorsSum1);
                     sw.WriteLine("{0}:{1}", divisorsSum2, divisorsSum1);
                 }
             }
@@ -40,6 +41,26 @@ namespace AmicableNumber
             sw.Close();
 
             return;
+        }
+
+        public static void Load()
+        {
+            if (File.Exists(FileName))
+            {
+                using (var sr = new StreamReader(FileName))
+                {
+                    string line;
+
+                    while ((line = sr.ReadLine()) != null)
+                    {
+                        var str = line.Split(':');
+
+                        str.Select((n, m) => { AmicableNumbers.Add(ulong.Parse(n)); Console.Write(n); if (m == 0) Console.Write(":"); m++; return n; }).ToArray();
+
+                        Console.WriteLine();
+                    }
+                }
+            }
         }
 
         public static ulong GetDivisorSum(ulong value)
