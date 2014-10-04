@@ -14,7 +14,7 @@ namespace AmicableNumber
         static void Main(string[] args)
         {
             AmicableNumbers = new List<ulong>();
-
+            
             StreamWriter sw = new StreamWriter("AmicableNumbers.txt", true, Encoding.GetEncoding("Shift_JIS"));
 
             Console.CancelKeyPress += (sender, e) =>
@@ -24,8 +24,8 @@ namespace AmicableNumber
 
             for(ulong i = 1; i <= ulong.MaxValue; i++)
             {
-                ulong divisorsSum1 = Sum(GetDivisors(i));
-                ulong divisorsSum2 = Sum(GetDivisors(divisorsSum1));
+                ulong divisorsSum1 = GetDivisorSum(i);
+                ulong divisorsSum2 = GetDivisorSum(divisorsSum1);
 
                 if(i == divisorsSum2 && i != divisorsSum1 && AmicableNumbers.Where(n => n == divisorsSum2).ToArray().Length == 0)
                 {
@@ -42,31 +42,19 @@ namespace AmicableNumber
             return;
         }
 
-        public static List<ulong> GetDivisors(ulong value)
+        public static ulong GetDivisorSum(ulong value)
         {
-            List<ulong> divisors = new List<ulong>();
+            ulong divisorSum = 0;
 
             for(ulong i = 1; i < value; i++)
             {
                 if(value % i == 0)
                 {
-                    divisors.Add(i);
+                    divisorSum += i;
                 }
             }
 
-            return divisors;
-        }
-
-        public static ulong Sum(List<ulong> values)
-        {
-            ulong x = 0;
-
-            foreach(var n in values)
-            {
-                x += n;
-            }
-
-            return x;
+            return divisorSum;
         }
     }
 }
